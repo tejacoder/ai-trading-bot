@@ -73,31 +73,27 @@ def request_builder_code(wallet_address: str) -> str:
         return None
 
 def update_config(builder_code: str, wallet_path: str):
-    """Update config.py"""
-    print(f"\n⚙️  Updating config...")
+    """Update config file with builder code"""
+    print(f"\n⚙️  Saving config...")
     
-    with open('config.py', 'r') as f:
-        config = f.read()
+    config_file = os.path.expanduser("~/.agent-wallet/.config.json")
     
-    # Update builder code (find any existing builder code pattern)
-    import re
-    config = re.sub(
-        r'BUILDER_CODE = "bc_[a-z0-9]+"',
-        f'BUILDER_CODE = "{builder_code}"',
-        config
-    )
+    # Create directory if not exists
+    os.makedirs(os.path.dirname(config_file), exist_ok=True)
     
-    # Update wallet path
-    config = re.sub(
-        r'WALLET_PATH = "[^"]+"',
-        f'WALLET_PATH = "{wallet_path}"',
-        config
-    )
+    # Save builder code to config file
+    config_data = {
+        'builder_code': builder_code,
+        'wallet_path': wallet_path
+    }
     
-    with open('config.py', 'w') as f:
-        f.write(config)
+    with open(config_file, 'w') as f:
+        json.dump(config_data, f, indent=2)
     
-    print(f"✅ Config updated")
+    # Set file permissions (owner only)
+    os.chmod(config_file, 0o600)
+    
+    print(f"✅ Config saved to: {config_file}")
 
 def main():
     print("\n" + "="*60)

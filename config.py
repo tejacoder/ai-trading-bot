@@ -2,9 +2,29 @@
 Trading Bot Configuration
 """
 
+import os
+import json
+
 # Wallet Configuration
 WALLET_PATH = "~/.agent-wallet/.wallet_data"  # Encrypted wallet
-BUILDER_CODE = "bc_ynnc3nw0"
+
+# Builder Code - Auto-load from wallet metadata or config file
+def get_builder_code():
+    """Get builder code from config file or wallet metadata"""
+    config_file = os.path.expanduser("~/.agent-wallet/.config.json")
+    
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, 'r') as f:
+                data = json.load(f)
+            return data.get('builder_code', None)
+        except:
+            pass
+    
+    # Fallback to None - will be set during setup
+    return None
+
+BUILDER_CODE = get_builder_code()
 
 # Network Configuration
 BASE_RPC = "https://mainnet.base.org"

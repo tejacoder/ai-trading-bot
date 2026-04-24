@@ -27,6 +27,7 @@ wheels/
 # Wallet files
 wallet.json
 .wallet_data
+.config.json
 *.key
 *.pem
 .agent-wallet/
