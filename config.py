@@ -4,7 +4,7 @@ Trading Bot Configuration
 
 # Wallet Configuration
 WALLET_PATH = "~/.simple-wallet/wallet.json"
-BUILDER_CODE = "bc_t0mz06m4"
+BUILDER_CODE = "bc_ynnc3nw0"
 
 # Network Configuration
 BASE_RPC = "https://mainnet.base.org"

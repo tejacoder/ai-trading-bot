@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fully Automated Agent Setup (FIXED)
-- Auto create wallet
+Fully Automated Agent Setup (FIXED v2)
+- Check existing wallet first
 - Auto request builder code (using wallet address!)
 - Auto configure
 """
@@ -12,9 +12,21 @@ import sys
 import requests
 from web3 import Web3
 
-def create_wallet():
-    """Create new wallet"""
-    print("🔐 Creating wallet...")
+def load_or_create_wallet():
+    """Load existing wallet or create new one"""
+    wallet_path = os.path.expanduser("~/.simple-wallet/wallet.json")
+    
+    # Check if wallet exists
+    if os.path.exists(wallet_path):
+        print("🔐 Loading existing wallet...")
+        with open(wallet_path, 'r') as f:
+            wallet_data = json.load(f)
+        wallet_address = wallet_data['address']
+        print(f"✅ Wallet: {wallet_address}")
+        return wallet_address
+    
+    # Create new wallet
+    print("🔐 Creating new wallet...")
     account = Web3().eth.account.create()
     
     wallet_data = {
@@ -22,7 +34,10 @@ def create_wallet():
         'private_key': account.key.hex()
     }
     
-    with open('wallet.json', 'w') as f:
+    # Create directory if not exists
+    os.makedirs(os.path.dirname(wallet_path), exist_ok=True)
+    
+    with open(wallet_path, 'w') as f:
         json.dump(wallet_data, f, indent=2)
     
     print(f"✅ Wallet: {account.address}")
@@ -61,10 +76,12 @@ def update_config(builder_code):
     with open('config.py', 'r') as f:
         config = f.read()
     
-    # Update builder code
-    config = config.replace(
-        'BUILDER_CODE = "bc_t0mz06m4"',
-        f'BUILDER_CODE = "{builder_code}"'
+    # Update builder code (find any existing builder code pattern)
+    import re
+    config = re.sub(
+        r'BUILDER_CODE = "bc_[a-z0-9]+"',
+        f'BUILDER_CODE = "{builder_code}"',
+        config
     )
     
     with open('config.py', 'w') as f:
@@ -75,17 +92,10 @@ def update_config(builder_code):
 def main():
     print("\n" + "="*60)
     print("🤖 Fully Automated Agent Setup")
-    print("="*60 + "\n")
+    print("="*60)
     
-    # Check if wallet exists
-    if os.path.exists('wallet.json'):
-        response = input("⚠️  wallet.json exists. Overwrite? (yes/no): ").strip().lower()
-        if response != 'yes':
-            print("❌ Setup cancelled")
-            return
-    
-    # Create wallet
-    wallet_address = create_wallet()
+    # Load or create wallet
+    wallet_address = load_or_create_wallet()
     
     # Request builder code using wallet address
     builder_code = request_builder_code(wallet_address)
