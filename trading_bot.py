@@ -10,7 +10,7 @@ from web3 import Web3
 import json
 import time
 from datetime import datetime
-from simple_wallet_builder_code import SimpleWalletWithBuilderCode as SimpleWallet
+from wallet_operations import SimpleWalletWithBuilderCode as SimpleWallet
 from price_oracle import PriceOracle
 from strategies.trading_strategies import StrategyManager
 from risk_manager import RiskManager

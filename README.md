@@ -22,6 +22,14 @@ This is a **private repository**. Do not share or distribute without permission.
 - ✅ **Grid Trading** - Range-bound trading
 - ✅ **Arbitrage** - Cross-DEX opportunities (coming soon)
 
+### Wallet Operations (NEW!)
+- ✅ **Send ETH** - Transfer with builder code attribution
+- ✅ **Swap Tokens** - ETH ↔ USDC/DAI on Uniswap V3
+- ✅ **Mint NFT** - Mint on existing contracts
+- ✅ **Deploy NFT** - Deploy new NFT contracts
+- ✅ **Check Balance** - ETH and token balances
+- ✅ **Interactive CLI** - Easy wallet management
+
 ### Risk Management
 - ✅ Position sizing (max 10% per trade)
 - ✅ Stop-loss (5% default)
@@ -84,6 +92,19 @@ SAFETY = {
 ---
 
 ## 🚀 Quick Start
+
+### Wallet Operations (NEW!)
+```bash
+# Interactive wallet management
+python3 wallet_cli.py
+
+# Features:
+# - Check balance
+# - Send ETH
+# - Swap tokens
+# - Mint NFT
+# - Deploy contracts
+```
 
 ### Backtest First
 ```bash
