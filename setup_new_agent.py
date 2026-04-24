@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
 Setup New Agent - Quick setup script for new trading bot agent
+(UPDATED: Uses wallet address for builder code request)
 """
 
 import json
 import os
 import sys
+import requests
 from web3 import Web3
 
 def create_new_wallet():
@@ -33,22 +35,46 @@ def create_new_wallet():
     
     return account.address
 
-def get_builder_code_instructions():
+def get_builder_code_instructions(wallet_address):
     """Show instructions to get builder code"""
     print("\n🏗️  Get Builder Code:")
-    print("\nOption 1: Via API")
+    print("\nOption 1: Auto Request (Recommended)")
     print("─" * 60)
-    print("curl -X POST https://api.base.dev/v1/agents/builder-codes \\")
-    print("  -H 'Content-Type: application/json' \\")
-    print("  -d '{\"email\": \"your-email@example.com\"}'")
     
-    print("\nOption 2: Via Browser")
+    # Try auto request
+    try:
+        print("Attempting auto request...")
+        response = requests.post(
+            'https://api.base.dev/v1/agents/builder-codes',
+            headers={'Content-Type': 'application/json'},
+            json={'walletAddress': wallet_address},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            builder_code = data.get('builderCode')
+            print(f"✅ Auto request successful!")
+            print(f"   Builder code: {builder_code}")
+            return builder_code
+        else:
+            print(f"❌ Auto request failed: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Auto request error: {e}")
+    
+    print("\nOption 2: Manual Request via API")
+    print("─" * 60)
+    print(f"curl -X POST https://api.base.dev/v1/agents/builder-codes \\")
+    print(f"  -H 'Content-Type: application/json' \\")
+    print(f"  -d '{{\"walletAddress\": \"{wallet_address}\"}}'")
+    
+    print("\nOption 3: Manual Request via Browser")
     print("─" * 60)
     print("1. Go to: https://base.org/builder-codes")
-    print("2. Enter your email")
+    print(f"2. Enter wallet address: {wallet_address}")
     print("3. Copy the builder code")
     
-    print("\nOption 3: Use Existing")
+    print("\nOption 4: Use Existing")
     print("─" * 60)
     print("If you already have a builder code, use that.")
     
@@ -75,7 +101,7 @@ def update_config(builder_code):
     
     print(f"✅ Config updated with builder code: {builder_code}")
 
-def show_next_steps(address):
+def show_next_steps(address, builder_code):
     """Show next steps"""
     print("\n" + "="*60)
     print("✅ SETUP COMPLETE!")
@@ -83,6 +109,7 @@ def show_next_steps(address):
     
     print(f"\n📋 Your Agent Info:")
     print(f"   Wallet: {address}")
+    print(f"   Builder Code: {builder_code}")
     print(f"   Config: config.py")
     print(f"   Wallet file: wallet.json")
     
@@ -126,8 +153,8 @@ def main():
     # Create wallet
     address = create_new_wallet()
     
-    # Get builder code
-    builder_code = get_builder_code_instructions()
+    # Get builder code (auto or manual)
+    builder_code = get_builder_code_instructions(address)
     
     if not builder_code:
         print("❌ Builder code required!")
@@ -137,7 +164,7 @@ def main():
     update_config(builder_code)
     
     # Show next steps
-    show_next_steps(address)
+    show_next_steps(address, builder_code)
 
 if __name__ == "__main__":
     main()
