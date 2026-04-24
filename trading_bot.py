@@ -10,14 +10,14 @@ from web3 import Web3
 import json
 import time
 from datetime import datetime
-from wallet_operations import SimpleWalletWithBuilderCode as SimpleWallet
+from wallet_adapter import TradingBotWallet
 from price_oracle import PriceOracle
 from strategies.trading_strategies import StrategyManager
 from risk_manager import RiskManager
 import config
 
 class TradingBot:
-    def __init__(self):
+    def __init__(self, password: str = None):
         print("🤖 Initializing Trading Bot...")
         
         # Load configuration
@@ -30,17 +30,12 @@ class TradingBot:
         if not self.web3.is_connected():
             raise Exception("Failed to connect to Base RPC")
         
-        # Initialize wallet
-        wallet_path = os.path.expanduser(config.WALLET_PATH)
-        with open(wallet_path, 'r') as f:
-            wallet_data = json.load(f)
-        
-        self.wallet = SimpleWallet(private_key=wallet_data['private_key'])
-        
-        # Set builder code
-        self.wallet.builder_code = config.BUILDER_CODE
+        # Initialize wallet (auto-detects encrypted/plaintext)
+        self.wallet = TradingBotWallet(password=password)
+        self.wallet.load()
         
         print(f"  Wallet: {self.wallet.address}")
+        print(f"  Type: {'Encrypted' if self.wallet._is_encrypted else 'Plaintext'}")
         print(f"  Builder Code: {config.BUILDER_CODE}")
         
         # Initialize components
@@ -424,8 +419,12 @@ class TradingBot:
 
 if __name__ == "__main__":
     import sys
+    import os
     
-    bot = TradingBot()
+    # Get password from environment or prompt
+    password = os.getenv('WALLET_PASSWORD')
+    
+    bot = TradingBot(password=password)
     
     if len(sys.argv) > 1 and sys.argv[1] == "backtest":
         # Run backtest

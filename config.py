@@ -3,7 +3,7 @@ Trading Bot Configuration
 """
 
 # Wallet Configuration
-WALLET_PATH = "~/.simple-wallet/wallet.json"
+WALLET_PATH = "~/.agent-wallet/.wallet_data"  # Encrypted wallet
 BUILDER_CODE = "bc_ynnc3nw0"
 
 # Network Configuration
