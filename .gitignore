@@ -24,10 +24,12 @@ wheels/
 *.egg
 
 # Sensitive files
-*.json
-!package.json
+# Wallet files
+wallet.json
+.wallet_data
 *.key
 *.pem
+.agent-wallet/
 .env
 .env.local
 
